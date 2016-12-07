@@ -6,7 +6,7 @@
  * Time: 6:23 PM
  */
 
-namespace DataAccess;
+namespace AdHocSportsGames\DataAccess;
 
 /**
  * Interface DatabaseInterface

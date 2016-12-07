@@ -4,12 +4,17 @@
  * User: iamcaptaincode
  */
 
+namespace AdHocSportsGames\DataAccess;
+
+use PDO;
+use PDOException;
+
 require_once 'DatabaseConfig.php';
 
 /**
  * Class DatabaseConnection
  */
-class DatabaseConnection implements \DataAccess\DatabaseInterface {
+class DatabaseConnection implements DatabaseInterface {
     /* The database connection */
     private $instance;
 
@@ -20,9 +25,9 @@ class DatabaseConnection implements \DataAccess\DatabaseInterface {
     public function getInstance() {
         try {
             $connectionString = "mysql:host=" . HOST . ";dbname=" . DBNAME;
-            $this->instance = new \PDO($connectionString, USER, PASS);
-            $this->instance->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        } catch (\PDOException $e) {
+            $this->instance = new PDO($connectionString, USER, PASS);
+            $this->instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
             //$this->logger->addInfo($e->getMessage());
             die();
         }
