@@ -6,7 +6,7 @@
  * Time: 7:30 PM
  */
 
-namespace Utilities;
+namespace AdHocSportsGames\Utilities;
 
 
 class JsonWrapper {
@@ -16,11 +16,8 @@ class JsonWrapper {
     private $data;
     /** @var  $message (Additional information) */
     private $message;
-
-    /**
-     * RatingResponse constructor.
-     */
-    public function __construct() { }
+    /** @var  $code (Http code to be set by headers */
+    private $code;
 
     /**
      * Set the status
@@ -45,6 +42,21 @@ class JsonWrapper {
     public function setMessage($message) {
         $this->message = $message;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCode() {
+        return $this->code;
+    }
+
+    /**
+     * @param mixed $code
+     */
+    public function setCode($code) {
+        $this->code = $code;
+    }
+
 
     /**
      * Convert class to an array.
