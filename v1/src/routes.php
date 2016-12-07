@@ -1,10 +1,17 @@
 <?php
 // Routes
 
-$app->get('/[{name}]', function ($request, $response, $args) {
-    // Sample log message
-    $this->logger->info("Slim-Skeleton '/' route");
+/**
+ * Start User Routes
+ */
 
-    // Render index view
-    return $this->renderer->render($response, 'index.phtml', $args);
-});
+$app->get('/user', 'AdHocSportsGames\Controller\UserController:handleGetUsers');
+$app->get('/user/{id}', 'AdHocSportsGames\Controller\UserController:handleGetUser');
+$app->post('/user', 'AdHocSportsGames\Controller\UserController:handlePostUser');
+$app->delete('/user/{id}', 'AdHocSportsGames\Controller\UserController:handleDeleteUser');
+$app->put('/user/{id}', 'AdHocSportsGames\Controller\UserController:handlePutUser');
+$app->patch('/user/{id}', 'AdHocSportsGames\Controller\UserController:handlePatchUser');
+
+/**
+ * End User Routes
+ */
