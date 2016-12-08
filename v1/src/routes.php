@@ -2,10 +2,10 @@
 // Routes
 
 /**
- * Start User Routes
+ * Start Routes
  */
 
-//put first name of controller here
+//put first names of controllers here
 $controllers = array("Game", "User");
 
 foreach($controllers as $controller) {
@@ -18,5 +18,5 @@ foreach($controllers as $controller) {
 }
 
 /**
- * End User Routes
+ * End Routes
  */
