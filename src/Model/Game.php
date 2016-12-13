@@ -14,6 +14,7 @@ namespace AdHocSportsGames\Model;
  */
 class Game {
     public $GameId;
+    public $UserId;
     public $GameName;
     public $GameType;
     public $GameLocation;

@@ -17,7 +17,7 @@ use AdHocSportsGames\Utilities\JsonWrapper;
  * Class UserController
  * @package Controller
  */
-class UserController {
+class UserController implements ControllerInterface {
 
     protected $ci;
 
@@ -31,7 +31,7 @@ class UserController {
      * @param $args
      * @return JsonWrapper
      */
-    public function handleGetUsers($request, $response, $args) {
+    public function handleGetAll($request, $response, $args) {
         $wrapper = (new UserSQL(new DatabaseConnection()))->selectAll();
         return $response->withJson($wrapper->toArray(), $wrapper->getCode());
     }
@@ -41,7 +41,7 @@ class UserController {
      * @param $args
      * @return JsonWrapper
      */
-    public function handleGetUser($request, $response, $args) {
+    public function handleGet($request, $response, $args) {
         $wrapper = (new UserSQL(new DatabaseConnection()))->select($args['id']);
         return $response->withJson($wrapper->toArray(), $wrapper->getCode());
     }
@@ -51,7 +51,7 @@ class UserController {
      * @param $args
      * @return JsonWrapper
      */
-    public function handlePostUser($request, $response, $args) {
+    public function handlePost($request, $response, $args) {
         $wrapper = (new UserSQL(new DatabaseConnection()))->insert($request->getBody());
         return $response->withJson($wrapper->toArray(), $wrapper->getCode());
     }
@@ -61,7 +61,7 @@ class UserController {
      * @param $args
      * @return JsonWrapper
      */
-    public function handlePutUser($request, $response, $args) {
+    public function handlePut($request, $response, $args) {
         $wrapper = (new UserSQL(new DatabaseConnection()))->fullyUpdate($request->getBody(), $args['id']);
         return $response->withJson($wrapper->toArray(), $wrapper->getCode());
     }
@@ -71,7 +71,7 @@ class UserController {
      * @param $args
      * @return JsonWrapper
      */
-    public function handlePatchUser($request, $response, $args) {
+    public function handlePatch($request, $response, $args) {
         $wrapper = (new UserSQL(new DatabaseConnection()))->partiallyUpdate($request->getBody(), $args['id']);
         return $response->withJson($wrapper->toArray(), $wrapper->getCode());
     }
@@ -81,7 +81,7 @@ class UserController {
      * @param $args
      * @return JsonWrapper
      */
-    public function handleDeleteUser($request, $response, $args) {
+    public function handleDelete($request, $response, $args) {
         $wrapper = (new UserSQL(new DatabaseConnection()))->delete($args['id']);
         return $response->withJson($wrapper->toArray(), $wrapper->getCode());
     }

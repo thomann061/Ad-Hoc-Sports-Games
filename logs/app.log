@@ -1,0 +1,57 @@
+[2016-12-06 17:15:08] slim-app.INFO: Slim-Skeleton '/' route [] {"uid":"a122f4f"}
+[2016-12-06 17:15:08] slim-app.INFO: Slim-Skeleton '/' route [] {"uid":"62d39d1"}
+[2016-12-06 17:22:03] slim-app.INFO: Slim-Skeleton '/' route [] {"uid":"fac4c7a"}
+[2016-12-06 17:22:04] slim-app.INFO: Slim-Skeleton '/' route [] {"uid":"d899cc5"}
+[2016-12-06 17:22:14] slim-app.INFO: Slim-Skeleton '/' route [] {"uid":"9acf7aa"}
+[2016-12-06 17:22:15] slim-app.INFO: Slim-Skeleton '/' route [] {"uid":"e1c49f9"}
+[2016-12-07 17:26:55] slim-app.INFO: made it here [] {"uid":"d7401c9"}
+[2016-12-07 17:26:55] slim-app.INFO: made it here [] {"uid":"64a220a"}
+[2016-12-07 17:28:01] slim-app.INFO: made it here [] {"uid":"6c0475e"}
+[2016-12-07 17:28:13] slim-app.INFO: made it here [] {"uid":"aa3ece7"}
+[2016-12-07 17:30:03] slim-app.INFO: made it here [] {"uid":"43ba79b"}
+[2016-12-07 17:31:19] slim-app.INFO: made it here [] {"uid":"dce7087"}
+[2016-12-07 17:32:43] slim-app.INFO: made it here [] {"uid":"378b494"}
+[2016-12-07 17:33:34] slim-app.INFO: All users were retrieved. [] {"uid":"5fd6e5c"}
+[2016-12-07 17:34:23] slim-app.INFO: All users were retrieved. [] {"uid":"e62ca47"}
+[2016-12-07 17:34:50] slim-app.INFO: All users were retrieved. [] {"uid":"29e4390"}
+[2016-12-07 17:34:52] slim-app.INFO: All users were retrieved. [] {"uid":"a3c035d"}
+[2016-12-07 17:35:45] slim-app.INFO: All users were retrieved. [] {"uid":"66226c9"}
+[2016-12-07 17:36:08] slim-app.INFO: All users were retrieved. [] {"uid":"c66f936"}
+[2016-12-07 17:36:46] slim-app.INFO: All users were retrieved. [] {"uid":"d23edd6"}
+[2016-12-07 17:37:41] slim-app.INFO: All users were retrieved. [] {"uid":"81d183b"}
+[2016-12-07 17:37:59] slim-app.INFO: All users were retrieved. [] {"uid":"a141aa6"}
+[2016-12-07 17:38:09] slim-app.INFO: All users were retrieved. [] {"uid":"159aee5"}
+[2016-12-07 17:39:38] slim-app.INFO: All users were retrieved. [] {"uid":"3ea9b7b"}
+[2016-12-07 17:39:57] slim-app.INFO: All users were retrieved. [] {"uid":"574d274"}
+[2016-12-07 17:40:38] slim-app.INFO: All users were retrieved. [] {"uid":"1dd926d"}
+[2016-12-07 17:41:03] slim-app.INFO: All users were retrieved. [] {"uid":"a915d53"}
+[2016-12-07 17:44:03] slim-app.INFO: All users were retrieved. [] {"uid":"952874f"}
+[2016-12-07 17:44:19] slim-app.INFO: All users were retrieved. [] {"uid":"177aae6"}
+[2016-12-07 17:50:16] slim-app.INFO: All users were retrieved. [] {"uid":"1224bef"}
+[2016-12-07 17:51:48] slim-app.INFO: All users were retrieved. [] {"uid":"3262ade"}
+[2016-12-07 17:51:48] slim-app.INFO: All users were retrieved. [] {"uid":"ae4ee50"}
+[2016-12-07 17:52:27] slim-app.INFO: All users were retrieved. [] {"uid":"5425d39"}
+[2016-12-07 17:52:27] slim-app.INFO: All users were retrieved. [] {"uid":"9d68ef9"}
+[2016-12-07 17:55:52] slim-app.INFO: All users were retrieved. [] {"uid":"83ba1ea"}
+[2016-12-07 17:56:24] slim-app.INFO: All users were retrieved. [] {"uid":"a61f58f"}
+[2016-12-07 17:58:33] slim-app.INFO: All users were retrieved. [] {"uid":"407a645"}
+[2016-12-07 17:59:20] slim-app.INFO: All users were retrieved. [] {"uid":"3761b54"}
+[2016-12-07 18:00:21] slim-app.INFO: All users were retrieved. [] {"uid":"b66bf8d"}
+[2016-12-07 18:02:33] slim-app.INFO: All users were retrieved. [] {"uid":"f296cf1"}
+[2016-12-07 18:04:51] slim-app.INFO: All users were retrieved. [] {"uid":"ce1c834"}
+[2016-12-07 18:05:06] slim-app.INFO: All users were retrieved. [] {"uid":"81cc288"}
+[2016-12-07 18:05:06] slim-app.INFO: All users were retrieved. [] {"uid":"bb98836"}
+[2016-12-07 18:05:32] slim-app.INFO: All users were retrieved. [] {"uid":"79f9955"}
+[2016-12-07 18:07:13] slim-app.INFO: All users were retrieved. [] {"uid":"9a2ce07"}
+[2016-12-07 18:07:28] slim-app.INFO: All users were retrieved. [] {"uid":"44d03fb"}
+[2016-12-07 18:08:02] slim-app.INFO: All users were retrieved. [] {"uid":"8177f4e"}
+[2016-12-07 20:01:48] slim-app.INFO: {   "UserName": "james008",   "UserPassword": "pass",   "UserFirstName": "James",   "UserLastName": "Bond #8" } [] {"uid":"0928ee7"}
+[2016-12-07 20:13:36] slim-app.INFO: {   "UserName": "james008",   "UserPassword": "pass",   "UserFirstName": "James",   "UserLastName": "Bond #8" } [] {"uid":"f483db5"}
+[2016-12-07 20:14:05] slim-app.INFO: {   "UserName": "james008",   "UserPassword": "pass",   "UserFirstName": "James",   "UserLastName": "Bond #8" } [] {"uid":"ebcfde1"}
+[2016-12-07 20:15:12] slim-app.INFO: Array [] {"uid":"4ddd307"}
+[2016-12-07 20:15:27] slim-app.INFO: Array [] {"uid":"0a724f4"}
+[2016-12-07 20:18:37] slim-app.INFO: Array [] {"uid":"f7a0f62"}
+[2016-12-07 20:19:04] slim-app.INFO: Array [] {"uid":"2b04acb"}
+[2016-12-07 20:19:36] slim-app.INFO: Array [] {"uid":"7f0caf3"}
+[2016-12-07 20:19:57] slim-app.INFO:  [] {"uid":"af45f29"}
+[2016-12-07 20:20:08] slim-app.INFO: Array [] {"uid":"2af6f08"}
