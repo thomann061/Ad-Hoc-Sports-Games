@@ -28,7 +28,7 @@ foreach($controllers as $controller) {
 
 //Child level routes for Game
 $parent = "Game";
-$childControllers = array("Rating");
+$childControllers = array("Rating", "Comment");
 
 foreach($childControllers as $controller) {
     $lParent = strtolower($parent);
