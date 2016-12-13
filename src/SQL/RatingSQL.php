@@ -142,7 +142,7 @@ class RatingSQL implements SQLChildInterface, JsonResponseInterface {
             }
             //sanitize all values
             foreach($arr as $key => $value)
-                $key[$value] = filter_var($value, FILTER_SANITIZE_STRING);
+                $arr[$key] = filter_var($value, FILTER_SANITIZE_STRING);
             //create
             $data = new Rating();
             $date = new DateTime();
@@ -201,7 +201,7 @@ class RatingSQL implements SQLChildInterface, JsonResponseInterface {
             }
             //sanitize all values
             foreach($arr as $key => $value)
-                $key[$value] = filter_var($value, FILTER_SANITIZE_STRING);
+                $arr[$key] = filter_var($value, FILTER_SANITIZE_STRING);
             //create
             $data = new Rating();
             $data->GameId = $pId;
@@ -258,7 +258,7 @@ class RatingSQL implements SQLChildInterface, JsonResponseInterface {
             }
             //sanitize all values
             foreach($arr as $key => $value)
-                $key[$value] = filter_var($value, FILTER_SANITIZE_STRING);
+                $arr[$key] = filter_var($value, FILTER_SANITIZE_STRING);
             //create
             $data = new Rating();
             $data->GameId = $pId;

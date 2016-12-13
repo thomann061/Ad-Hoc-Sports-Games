@@ -118,7 +118,7 @@ class GameSQL implements SQLParentInterface {
             }
             //sanitize all values
             foreach($arr as $key => $value)
-                $key[$value] = filter_var($value, FILTER_SANITIZE_STRING);
+                $arr[$key] = filter_var($value, FILTER_SANITIZE_STRING);
             //create
             $data = new Game();
             $data->UserId = $arr['UserId'];
@@ -203,7 +203,7 @@ class GameSQL implements SQLParentInterface {
             }
             //sanitize all values
             foreach($arr as $key => $value)
-                $key[$value] = filter_var($value, FILTER_SANITIZE_STRING);
+                $arr[$key] = filter_var($value, FILTER_SANITIZE_STRING);
             //create
             $data = new Game();
             $data->UserId = $arr['UserId'];
@@ -289,7 +289,7 @@ class GameSQL implements SQLParentInterface {
             }
             //sanitize all values
             foreach($arr as $key => $value)
-                $key[$value] = filter_var($value, FILTER_SANITIZE_STRING);
+                $arr[$key] = filter_var($value, FILTER_SANITIZE_STRING);
             //create
             $data = new Game();
             if(isset($arr['UserId']))

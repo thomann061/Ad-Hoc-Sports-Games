@@ -116,7 +116,7 @@ class UserSQL implements SQLParentInterface {
             }
             //sanitize all values
             foreach($arr as $key => $value)
-                $key[$value] = filter_var($value, FILTER_SANITIZE_STRING);
+                $arr[$key] = filter_var($value, FILTER_SANITIZE_STRING);
             //create a user
             $user = new User();
             $user->UserName = $arr['UserName'];
@@ -199,7 +199,7 @@ class UserSQL implements SQLParentInterface {
             }
             //sanitize all values
             foreach($arr as $key => $value)
-                $key[$value] = filter_var($value, FILTER_SANITIZE_STRING);
+                $arr[$key] = filter_var($value, FILTER_SANITIZE_STRING);
             //create a user
             $user = new User();
             $user->UserName = $arr['UserName'];
@@ -283,7 +283,7 @@ class UserSQL implements SQLParentInterface {
             }
             //sanitize all values
             foreach($arr as $key => $value)
-                $key[$value] = filter_var($value, FILTER_SANITIZE_STRING);
+                $arr[$key] = filter_var($value, FILTER_SANITIZE_STRING);
             //create a user
             $user = new User();
             if(isset($arr['UserName']))
