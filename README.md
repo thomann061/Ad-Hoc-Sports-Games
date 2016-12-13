@@ -24,7 +24,7 @@ There are two sub-endpoints off game: comment and rating
 
 These four endpoints support 5 HTTP methods: GET, POST, PATCH, PUT, DELETE
 
-## Endpoint Format
+### Endpoint Format
 
 GET (all): http://localhost:8080/api/v1/{endpoint}
 
@@ -38,7 +38,7 @@ PUT: http://localhost:8080/api/v1/{endpoint}/{id}
 
 DELETE: http://localhost:8080/api/v1/{endpoint}/{id}
 
-## Sub-Endpoint Format For Game
+### Sub-Endpoint Format For Game
 
 GET (all): http://localhost:8080/api/v1/game/{id}/{sub-endpoint}
 
