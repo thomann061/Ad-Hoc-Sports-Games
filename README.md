@@ -25,17 +25,27 @@ These four endpoints support six HTTP methods: GET (all), GET (one), POST, PATCH
 ## Endpoint Format
 
 GET (all): http://localhost:8080/api/v1/{endpoint}
+
 GET (one): http://localhost:8080/api/v1/{endpoint}/{id}
+
 POST: http://localhost:8080/api/v1/{endpoint}/{id}
+
 PATCH: http://localhost:8080/api/v1/{endpoint}/{id}
+
 PUT: http://localhost:8080/api/v1/{endpoint}/{id}
+
 DELETE: http://localhost:8080/api/v1/{endpoint}/{id}
 
 ## Sub-Endpoint Format
 
 GET (all): http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}
+
 GET (one): http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}/{id}
+
 POST: http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}
+
 PATCH: http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}/{id}
+
 PUT: http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}/{id}
+
 DELETE: http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}/{id}
