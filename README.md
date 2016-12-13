@@ -18,9 +18,11 @@ Feel free to use the sample database located in /database.txt
 
 Base URL: http://localhost:8080/api/v1/
 
-There are four endpoints: user, game, comment (sub-endpoint), rating (sub-endpoint)
+There are two parent endpoints: user and game
 
-These four endpoints support six HTTP methods: GET (all), GET (one), POST, PATCH, PUT, DELETE
+There are two sub-endpoints off game: comment and rating
+
+These four endpoints support 5 HTTP methods: GET, POST, PATCH, PUT, DELETE
 
 ## Endpoint Format
 
@@ -36,16 +38,16 @@ PUT: http://localhost:8080/api/v1/{endpoint}/{id}
 
 DELETE: http://localhost:8080/api/v1/{endpoint}/{id}
 
-## Sub-Endpoint Format
+## Sub-Endpoint Format For Game
 
-GET (all): http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}
+GET (all): http://localhost:8080/api/v1/game/{id}/{sub-endpoint}
 
-GET (one): http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}/{id}
+GET (one): http://localhost:8080/api/v1/game/{id}/{sub-endpoint}/{id}
 
-POST: http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}
+POST: http://localhost:8080/api/v1/game/{id}/{sub-endpoint}
 
-PATCH: http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}/{id}
+PATCH: http://localhost:8080/api/v1/game/{id}/{sub-endpoint}/{id}
 
-PUT: http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}/{id}
+PUT: http://localhost:8080/api/v1/game/{id}/{sub-endpoint}/{id}
 
 DELETE: http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}/{id}
