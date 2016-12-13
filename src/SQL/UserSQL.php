@@ -12,93 +12,81 @@ use AdHocSportsGames\DataAccess\DatabaseInterface;
 use AdHocSportsGames\Http\StatusCodes;
 use AdHocSportsGames\Model\User;
 use AdHocSportsGames\Utilities\JsonWrapper;
+use AdHocSportsGames\Utilities\Status;
 use PDO;
 
-class UserSQL implements SQLParentInterface {
+class UserSQL implements SQLParentInterface, JsonResponseInterface {
     private $db;
+    private $name;
 
     public function __construct(DatabaseInterface $db) {
         $this->db = $db->getInstance();
+        $this->name = "User";
+    }
+
+    /**
+     * Json Return Response
+     * @param $message
+     * @param $data
+     * @param $status
+     * @param $code
+     * @return JsonWrapper
+     */
+    public function returnResponse($message, $data, $status, $code) {
+        $wrapper = new JsonWrapper();
+        $wrapper->setMessage($message);
+        $wrapper->setData($data);
+        $wrapper->setStatus($status);
+        $wrapper->setCode($code);
+        return $wrapper;
     }
 
     public function selectAll() {
         //Prepare SQL
-        $sth = $this->db->prepare("SELECT * FROM User"); //create statement
+        $sth = $this->db->prepare("SELECT * FROM " . $this->name); //create statement
         $sth->execute();  //execute the statement on the database
 
         //fetch directly into class
-        $users = $sth->fetchAll(PDO::FETCH_CLASS, 'AdHocSportsGames\Model\User');
+        $data = $sth->fetchAll(PDO::FETCH_CLASS, "AdHocSportsGames\\Model\\" . $this->name);
 
-        //the wrapper
-        $wrapper = new JsonWrapper();
-
-        if($sth->rowCount()) {
-            $wrapper->setMessage("Users were retrieved");
-            $wrapper->setData($users);
-            $wrapper->setStatus("OK");
-            $wrapper->setCode(StatusCodes::OK);
-        } else {
-            $wrapper->setMessage("No users exist");
-            $wrapper->setData(null);
-            $wrapper->setStatus("No results");
-            $wrapper->setCode(StatusCodes::NOT_FOUND);
-        }
-        return $wrapper;
+        if($sth->rowCount())
+            return $this->returnResponse($this->name . "s were retrieved", $data, Status::SUCCESS, StatusCodes::OK);
+        else
+            return $this->returnResponse("No " . $this->name . "s exist", null, Status::NO_RESULTS, StatusCodes::NOT_FOUND);
     }
 
     public function select($id) {
-        //the wrapper
-        $wrapper = new JsonWrapper();
-
         //sanitize id
         $id = filter_var($id, FILTER_SANITIZE_STRING);
 
         //type check id
-        if(!filter_var($id, FILTER_VALIDATE_INT) ){
-            $wrapper->setMessage("User Id is not a number");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+        if(!filter_var($id, FILTER_VALIDATE_INT))
+            return $this->returnResponse($this->name . " Id is not a number", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //Prepare SQL
-        $sth = $this->db->prepare("SELECT * FROM User
-                                   WHERE UserId = :id"); //create statement
+        $sth = $this->db->prepare("SELECT * FROM " . $this->name .
+                                    " WHERE " . $this->name . "Id = :id"); //create statement
         $sth->bindParam(':id', $id);
         $sth->execute();  //execute the statement on the database
 
         //fetch directly into class
-        $user = $sth->fetchAll(PDO::FETCH_CLASS, 'AdHocSportsGames\Model\User');
+        $data = $sth->fetchAll(PDO::FETCH_CLASS, 'AdHocSportsGames\Model\User');
 
-        if($sth->rowCount()) {
-            $wrapper->setMessage("User was retrieved");
-            $wrapper->setData($user);
-            $wrapper->setStatus("OK");
-            $wrapper->setCode(StatusCodes::OK);
-        } else {
-            $wrapper->setMessage("User does not exist");
-            $wrapper->setData(null);
-            $wrapper->setStatus("No results");
-            $wrapper->setCode(StatusCodes::NOT_FOUND);
-        }
-        return $wrapper;
+        if($sth->rowCount())
+            return $this->returnResponse($this->name . " was retrieved", $data, Status::SUCCESS, StatusCodes::OK);
+        else
+            return $this->returnResponse($this->name . " does not exist", null, Status::NO_RESULTS, StatusCodes::NOT_FOUND);
     }
 
     public function insert($obj) {
         //vars
-        $wrapper = new JsonWrapper();
         $arr = null;
-        $user = null;
+        $data = null;
 
         //check if valid json
-        if(!json_decode($obj)) {
-            $wrapper->setMessage("JSON format is incorrect");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        } else
+        if(!json_decode($obj))
+            $this->returnResponse("JSON format is incorrect", null, Status::ERROR, StatusCodes::BAD_REQUEST);
+        else
             $arr = json_decode($obj, true);
 
         //check if valid keys exist
@@ -106,82 +94,55 @@ class UserSQL implements SQLParentInterface {
             && array_key_exists("UserFirstName", $arr) && array_key_exists("UserLastName", $arr)) {
             //check for empty fields
             foreach($arr as $key => $value) {
-                if(empty($value)) {
-                    $wrapper->setMessage("No values can be empty");
-                    $wrapper->setData(null);
-                    $wrapper->setStatus("Error");
-                    $wrapper->setCode(StatusCodes::BAD_REQUEST);
-                    return $wrapper;
-                }
+                if(empty($value))
+                    return $this->returnResponse("No values can be empty", null, Status::ERROR, StatusCodes::BAD_REQUEST);
             }
             //sanitize all values
             foreach($arr as $key => $value)
                 $arr[$key] = filter_var($value, FILTER_SANITIZE_STRING);
             //create a user
-            $user = new User();
-            $user->UserName = $arr['UserName'];
-            $user->UserPassword = $arr['UserPassword'];
-            $user->UserFirstName = $arr['UserFirstName'];
-            $user->UserLastName = $arr['UserLastName'];
-        } else {
-            $wrapper->setMessage("Key names are incorrect");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+            $data = new User();
+            $data->UserName = $arr['UserName'];
+            $data->UserPassword = $arr['UserPassword'];
+            $data->UserFirstName = $arr['UserFirstName'];
+            $data->UserLastName = $arr['UserLastName'];
+        } else
+            return $this->returnResponse("Key names are incorrect", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //Prepare SQL
-        $sth = $this->db->prepare("INSERT INTO User (UserName, UserPassword, 
+        $sth = $this->db->prepare("INSERT INTO " . $this->name . " (UserName, UserPassword, 
                                     UserFirstName, UserLastName) 
                                     VALUES(:userName, :userPassword, :userFirstName,
                                     :userLastName)"); //create statement
-        $sth->bindParam(':userName', $user->UserName);
-        $sth->bindParam(':userPassword', $user->UserPassword);
-        $sth->bindParam(':userFirstName', $user->UserFirstName);
-        $sth->bindParam(':userLastName', $user->UserLastName);
+        $sth->bindParam(':userName', $data->UserName);
+        $sth->bindParam(':userPassword', $data->UserPassword);
+        $sth->bindParam(':userFirstName', $data->UserFirstName);
+        $sth->bindParam(':userLastName', $data->UserLastName);
         $sth->execute();  //execute the statement on the database
 
-        if($sth->rowCount()) {
-            $wrapper->setMessage("User was created");
-            $wrapper->setData(null);
-            $wrapper->setStatus("OK");
-            $wrapper->setCode(StatusCodes::CREATED);
-        } else {
-            $wrapper->setMessage("User was not created");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::INTERNAL_SERVER_ERROR);
-        }
-        return $wrapper;
+        if($sth->rowCount())
+            return $this->returnResponse($this->name . " was created", null, Status::SUCCESS, StatusCodes::CREATED);
+        else
+            return $this->returnResponse($this->name . " was not created", null, Status::ERROR, StatusCodes::INTERNAL_SERVER_ERROR);
     }
 
     public function fullyUpdate($obj, $id) {
         //vars
         $wrapper = new JsonWrapper();
         $arr = null;
-        $user = null;
+        $data = null;
 
         //sanitize id
         $id = filter_var($id, FILTER_SANITIZE_STRING);
 
         //type check id
-        if(!filter_var($id, FILTER_VALIDATE_INT) ){
-            $wrapper->setMessage("User Id is not a number");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+        if(!filter_var($id, FILTER_VALIDATE_INT))
+            return $this->returnResponse($this->name . " Id is not a number", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //check if valid json
-        if(!json_decode($obj)) {
-            $wrapper->setMessage("JSON format is incorrect");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        } else
+        if(!json_decode($obj))
+            $this->returnResponse("JSON format is incorrect", null, Status::ERROR, StatusCodes::BAD_REQUEST);
+        else
             $arr = json_decode($obj, true);
 
         //check if valid keys exist
@@ -189,83 +150,55 @@ class UserSQL implements SQLParentInterface {
             && array_key_exists("UserFirstName", $arr) && array_key_exists("UserLastName", $arr)) {
             //check for empty fields
             foreach($arr as $key => $value) {
-                if(empty($value)) {
-                    $wrapper->setMessage("No values can be empty");
-                    $wrapper->setData(null);
-                    $wrapper->setStatus("Error");
-                    $wrapper->setCode(StatusCodes::BAD_REQUEST);
-                    return $wrapper;
-                }
+                if(empty($value))
+                    return $this->returnResponse("No values can be empty", null, Status::ERROR, StatusCodes::BAD_REQUEST);
             }
             //sanitize all values
             foreach($arr as $key => $value)
                 $arr[$key] = filter_var($value, FILTER_SANITIZE_STRING);
             //create a user
-            $user = new User();
-            $user->UserName = $arr['UserName'];
-            $user->UserPassword = $arr['UserPassword'];
-            $user->UserFirstName = $arr['UserFirstName'];
-            $user->UserLastName = $arr['UserLastName'];
-        } else {
-            $wrapper->setMessage("Key names are incorrect");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+            $data = new User();
+            $data->UserName = $arr['UserName'];
+            $data->UserPassword = $arr['UserPassword'];
+            $data->UserFirstName = $arr['UserFirstName'];
+            $data->UserLastName = $arr['UserLastName'];
+        } else
+            return $this->returnResponse("Key names are incorrect", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //Prepare SQL
-        $sth = $this->db->prepare("UPDATE User 
-                                    Set UserName = :userName, UserPassword = :userPassword, 
+        $sth = $this->db->prepare("UPDATE " . $this->name .
+                                    " Set UserName = :userName, UserPassword = :userPassword, 
                                     UserFirstName = :userFirstName, UserLastName = :userLastName 
                                     WHERE UserId = :userId"); //create statement
-        $sth->bindParam(':userName', $user->UserName);
-        $sth->bindParam(':userPassword', $user->UserPassword);
-        $sth->bindParam(':userFirstName', $user->UserFirstName);
-        $sth->bindParam(':userLastName', $user->UserLastName);
+        $sth->bindParam(':userName', $data->UserName);
+        $sth->bindParam(':userPassword', $data->UserPassword);
+        $sth->bindParam(':userFirstName', $data->UserFirstName);
+        $sth->bindParam(':userLastName', $data->UserLastName);
         $sth->bindParam(':userId', $id);
         $sth->execute();  //execute the statement on the database
 
-        if($sth->rowCount()) {
-            $wrapper->setMessage("User was fully updated");
-            $wrapper->setData(null);
-            $wrapper->setStatus("OK");
-            $wrapper->setCode(StatusCodes::OK);
-        } else {
-            $wrapper->setMessage("User was not fully updated");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::INTERNAL_SERVER_ERROR);
-        }
-        return $wrapper;
+        if($sth->rowCount())
+            return $this->returnResponse($this->name . " was fully updated", null, Status::SUCCESS, StatusCodes::CREATED);
+        else
+            return $this->returnResponse($this->name . " was not fully updated", null, Status::ERROR, StatusCodes::INTERNAL_SERVER_ERROR);
     }
 
     public function partiallyUpdate($obj, $id) {
         //vars
-        $wrapper = new JsonWrapper();
         $arr = null;
-        $user = null;
+        $data = null;
 
         //sanitize id
         $id = filter_var($id, FILTER_SANITIZE_STRING);
 
         //type check id
-        if(!filter_var($id, FILTER_VALIDATE_INT) ){
-            $wrapper->setMessage("User Id is not a number");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+        if(!filter_var($id, FILTER_VALIDATE_INT))
+            return $this->returnResponse($this->name . " Id is not a number", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //check if valid json
-        if(!json_decode($obj)) {
-            $wrapper->setMessage("JSON format is incorrect");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        } else
+        if(!json_decode($obj))
+            $this->returnResponse("JSON format is incorrect", null, Status::ERROR, StatusCodes::BAD_REQUEST);
+        else
             $arr = json_decode($obj, true);
 
         //check if valid keys exist
@@ -273,109 +206,75 @@ class UserSQL implements SQLParentInterface {
             || array_key_exists("UserFirstName", $arr) || array_key_exists("UserLastName", $arr)) {
             //check for empty fields
             foreach($arr as $key => $value) {
-                if(empty($value)) {
-                    $wrapper->setMessage("No values can be empty");
-                    $wrapper->setData(null);
-                    $wrapper->setStatus("Error");
-                    $wrapper->setCode(StatusCodes::BAD_REQUEST);
-                    return $wrapper;
-                }
+                if(empty($value))
+                    return $this->returnResponse("No values can be empty", null, Status::ERROR, StatusCodes::BAD_REQUEST);
             }
             //sanitize all values
             foreach($arr as $key => $value)
                 $arr[$key] = filter_var($value, FILTER_SANITIZE_STRING);
             //create a user
-            $user = new User();
+            $data = new User();
             if(isset($arr['UserName']))
-                $user->UserName = $arr['UserName'];
+                $data->UserName = $arr['UserName'];
             if(isset($arr['UserPassword']))
-                $user->UserPassword = $arr['UserPassword'];
+                $data->UserPassword = $arr['UserPassword'];
             if(isset($arr['UserFirstName']))
-                $user->UserFirstName = $arr['UserFirstName'];
+                $data->UserFirstName = $arr['UserFirstName'];
             if(isset($arr['UserLastName']))
-                $user->UserLastName = $arr['UserLastName'];
-        } else {
-            $wrapper->setMessage("Key names are incorrect");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+                $data->UserLastName = $arr['UserLastName'];
+        } else
+            return $this->returnResponse("Key names are incorrect", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //Prepare SQL
-        $startStatement = "UPDATE User SET ";
+        $startStatement = "UPDATE " . $this->name . " SET ";
         $endStatement = " WHERE UserId=:userId";
         $set = array();
-        if(isset($user->UserName))
+        if(isset($data->UserName))
             array_push($set, "UserName=:userName");
-        if(isset($user->UserPassword))
+        if(isset($data->UserPassword))
             array_push($set, "UserPassword=:userPassword");
-        if(isset($user->UserFirstName))
+        if(isset($data->UserFirstName))
             array_push($set, "UserFirstName=:userFirstName");
-        if(isset($user->UserLastName))
+        if(isset($data->UserLastName))
             array_push($set, "UserLastName=:userLastName");
         $setString = implode(", ", $set);
         $statement = $startStatement . $setString . $endStatement;
 
         $sth = $this->db->prepare($statement); //create statement
-        if(isset($user->UserName))
+        if(isset($data->UserName))
             $sth->bindParam(':userName', $user->UserName);
-        if(isset($user->UserPassword))
+        if(isset($data->UserPassword))
             $sth->bindParam(':userPassword', $user->UserPassword);
-        if(isset($user->UserFirstName))
+        if(isset($data->UserFirstName))
             $sth->bindParam(':userFirstName', $user->UserFirstName);
-        if(isset($user->UserLastName))
+        if(isset($data->UserLastName))
             $sth->bindParam(':userLastName', $user->UserLastName);
         $sth->bindParam(':userId', $id);
         $sth->execute();  //execute the statement on the database
 
-        if($sth->rowCount()) {
-            $wrapper->setMessage("User was partially updated");
-            $wrapper->setData(null);
-            $wrapper->setStatus("OK");
-            $wrapper->setCode(StatusCodes::OK);
-        } else {
-            $wrapper->setMessage("User was not partially updated");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::INTERNAL_SERVER_ERROR);
-        }
-        return $wrapper;
+        if($sth->rowCount())
+            return $this->returnResponse($this->name . " was partially updated", null, Status::SUCCESS, StatusCodes::CREATED);
+        else
+            return $this->returnResponse($this->name . " was not partially updated", null, Status::ERROR, StatusCodes::INTERNAL_SERVER_ERROR);
     }
 
     public function delete($id) {
-        //the wrapper
-        $wrapper = new JsonWrapper();
-
         //sanitize id
         $id = filter_var($id, FILTER_SANITIZE_STRING);
 
         //type check id
-        if(!filter_var($id, FILTER_VALIDATE_INT) ){
-            $wrapper->setMessage("User Id is not a number");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+        if(!filter_var($id, FILTER_VALIDATE_INT))
+            return $this->returnResponse($this->name . " Id is not a number", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //Prepare SQL
-        $sth = $this->db->prepare("DELETE FROM User
-                                   WHERE UserId = :id"); //create statement
+        $sth = $this->db->prepare("DELETE FROM " . $this->name . " 
+                                   WHERE " . $this->name . "Id = :id"); //create statement
         $sth->bindParam(':id', $id);
         $sth->execute();  //execute the statement on the database
 
-        if($sth->rowCount()) {
-            $wrapper->setMessage("User was deleted");
-            $wrapper->setData(null);
-            $wrapper->setStatus("OK");
-            $wrapper->setCode(StatusCodes::OK);
-        } else {
-            $wrapper->setMessage("User does not exist and was not deleted");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::NOT_FOUND);
-        }
-        return $wrapper;
+        if($sth->rowCount())
+            return $this->returnResponse($this->name . " was deleted", null, Status::SUCCESS, StatusCodes::CREATED);
+        else
+            return $this->returnResponse($this->name . " was not deleted", null, Status::ERROR, StatusCodes::INTERNAL_SERVER_ERROR);
     }
 }

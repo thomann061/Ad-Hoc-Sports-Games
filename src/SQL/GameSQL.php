@@ -12,15 +12,33 @@ use AdHocSportsGames\DataAccess\DatabaseInterface;
 use AdHocSportsGames\Http\StatusCodes;
 use AdHocSportsGames\Model\Game;
 use AdHocSportsGames\Utilities\JsonWrapper;
+use AdHocSportsGames\Utilities\Status;
 use PDO;
 
-class GameSQL implements SQLParentInterface {
+class GameSQL implements SQLParentInterface, JsonResponseInterface {
     private $db;
     private $name;
 
     public function __construct(DatabaseInterface $db) {
         $this->db = $db->getInstance();
         $this->name = "Game";
+    }
+
+    /**
+     * Json Return Response
+     * @param $message
+     * @param $data
+     * @param $status
+     * @param $code
+     * @return JsonWrapper
+     */
+    public function returnResponse($message, $data, $status, $code) {
+        $wrapper = new JsonWrapper();
+        $wrapper->setMessage($message);
+        $wrapper->setData($data);
+        $wrapper->setStatus($status);
+        $wrapper->setCode($code);
+        return $wrapper;
     }
 
     public function selectAll() {
@@ -31,38 +49,19 @@ class GameSQL implements SQLParentInterface {
         //fetch directly into class
         $data = $sth->fetchAll(PDO::FETCH_CLASS, "AdHocSportsGames\\Model\\" . $this->name);
 
-        //the wrapper
-        $wrapper = new JsonWrapper();
-
-        if($sth->rowCount()) {
-            $wrapper->setMessage($this->name . "s were retrieved");
-            $wrapper->setData($data);
-            $wrapper->setStatus("OK");
-            $wrapper->setCode(StatusCodes::OK);
-        } else {
-            $wrapper->setMessage("No " . $this->name . "s exist");
-            $wrapper->setData(null);
-            $wrapper->setStatus("No results");
-            $wrapper->setCode(StatusCodes::NOT_FOUND);
-        }
-        return $wrapper;
+        if($sth->rowCount())
+            return $this->returnResponse($this->name . "s were retrieved", $data, Status::SUCCESS, StatusCodes::OK);
+        else
+            return $this->returnResponse("No " . $this->name . "s exist", null, Status::NO_RESULTS, StatusCodes::NOT_FOUND);
     }
 
     public function select($id) {
-        //the wrapper
-        $wrapper = new JsonWrapper();
-
         //sanitize id
         $id = filter_var($id, FILTER_SANITIZE_STRING);
 
         //type check id
-        if(!filter_var($id, FILTER_VALIDATE_INT) ){
-            $wrapper->setMessage($this->name . " Id is not a number");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+        if(!filter_var($id, FILTER_VALIDATE_INT))
+            return $this->returnResponse($this->name . " Id is not a number", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //Prepare SQL
         $sth = $this->db->prepare("SELECT * FROM " . $this->name .
@@ -73,34 +72,21 @@ class GameSQL implements SQLParentInterface {
         //fetch directly into class
         $data = $sth->fetchAll(PDO::FETCH_CLASS, "AdHocSportsGames\\Model\\" . $this->name);
 
-        if($sth->rowCount()) {
-            $wrapper->setMessage($this->name . " was retrieved");
-            $wrapper->setData($data);
-            $wrapper->setStatus("OK");
-            $wrapper->setCode(StatusCodes::OK);
-        } else {
-            $wrapper->setMessage($this->name . " does not exist");
-            $wrapper->setData(null);
-            $wrapper->setStatus("No results");
-            $wrapper->setCode(StatusCodes::NOT_FOUND);
-        }
-        return $wrapper;
+        if($sth->rowCount())
+            return $this->returnResponse($this->name . " was retrieved", $data, Status::SUCCESS, StatusCodes::OK);
+        else
+            return $this->returnResponse($this->name . " does not exist", null, Status::NO_RESULTS, StatusCodes::NOT_FOUND);
     }
 
     public function insert($obj) {
         //vars
-        $wrapper = new JsonWrapper();
         $arr = null;
         $data = null;
 
         //check if valid json
-        if(!json_decode($obj)) {
-            $wrapper->setMessage("JSON format is incorrect");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        } else
+        if(!json_decode($obj))
+            $this->returnResponse("JSON format is incorrect", null, Status::ERROR, StatusCodes::BAD_REQUEST);
+        else
             $arr = json_decode($obj, true);
 
         //check if valid keys exist
@@ -108,13 +94,8 @@ class GameSQL implements SQLParentInterface {
             && array_key_exists("GameLocation", $arr) && array_key_exists("GameDateTime", $arr)) {
             //check for empty fields
             foreach($arr as $key => $value) {
-                if(empty($value)) {
-                    $wrapper->setMessage("No values can be empty");
-                    $wrapper->setData(null);
-                    $wrapper->setStatus("Error");
-                    $wrapper->setCode(StatusCodes::BAD_REQUEST);
-                    return $wrapper;
-                }
+                if(empty($value))
+                    return $this->returnResponse("No values can be empty", null, Status::ERROR, StatusCodes::BAD_REQUEST);
             }
             //sanitize all values
             foreach($arr as $key => $value)
@@ -126,13 +107,8 @@ class GameSQL implements SQLParentInterface {
             $data->GameType = $arr['GameType'];
             $data->GameLocation = $arr['GameLocation'];
             $data->GameDateTime = $arr['GameDateTime'];
-        } else {
-            $wrapper->setMessage("Key names are incorrect");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+        } else
+            return $this->returnResponse("Key names are incorrect", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //Prepare SQL
         $sth = $this->db->prepare("INSERT INTO " . $this->name . " (UserId, GameName, GameType, 
@@ -146,18 +122,10 @@ class GameSQL implements SQLParentInterface {
         $sth->bindParam(':gameDateTime', $data->GameDateTime);
         $sth->execute();  //execute the statement on the database
 
-        if($sth->rowCount()) {
-            $wrapper->setMessage($this->name . " was created");
-            $wrapper->setData(null);
-            $wrapper->setStatus("OK");
-            $wrapper->setCode(StatusCodes::CREATED);
-        } else {
-            $wrapper->setMessage($this->name . " was not created");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::INTERNAL_SERVER_ERROR);
-        }
-        return $wrapper;
+        if($sth->rowCount())
+            return $this->returnResponse($this->name . " was created", null, Status::SUCCESS, StatusCodes::CREATED);
+        else
+            return $this->returnResponse($this->name . " was not created", null, Status::ERROR, StatusCodes::INTERNAL_SERVER_ERROR);
     }
 
     public function fullyUpdate($obj, $id) {
@@ -170,22 +138,13 @@ class GameSQL implements SQLParentInterface {
         $id = filter_var($id, FILTER_SANITIZE_STRING);
 
         //type check id
-        if(!filter_var($id, FILTER_VALIDATE_INT) ){
-            $wrapper->setMessage($this->name . " Id is not a number");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+        if(!filter_var($id, FILTER_VALIDATE_INT))
+            return $this->returnResponse($this->name . " Id is not a number", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //check if valid json
-        if(!json_decode($obj)) {
-            $wrapper->setMessage("JSON format is incorrect");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        } else
+        if(!json_decode($obj))
+            $this->returnResponse("JSON format is incorrect", null, Status::ERROR, StatusCodes::BAD_REQUEST);
+        else
             $arr = json_decode($obj, true);
 
         //check if valid keys exist
@@ -193,13 +152,8 @@ class GameSQL implements SQLParentInterface {
             && array_key_exists("GameLocation", $arr) && array_key_exists("GameDateTime", $arr)) {
             //check for empty fields
             foreach($arr as $key => $value) {
-                if(empty($value)) {
-                    $wrapper->setMessage("No values can be empty");
-                    $wrapper->setData(null);
-                    $wrapper->setStatus("Error");
-                    $wrapper->setCode(StatusCodes::BAD_REQUEST);
-                    return $wrapper;
-                }
+                if(empty($value))
+                    return $this->returnResponse("No values can be empty", null, Status::ERROR, StatusCodes::BAD_REQUEST);
             }
             //sanitize all values
             foreach($arr as $key => $value)
@@ -211,13 +165,8 @@ class GameSQL implements SQLParentInterface {
             $data->GameType = $arr['GameType'];
             $data->GameLocation = $arr['GameLocation'];
             $data->GameDateTime = $arr['GameDateTime'];
-        } else {
-            $wrapper->setMessage("Key names are incorrect");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+        } else
+            return $this->returnResponse("Key names are incorrect", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //Prepare SQL
         $sth = $this->db->prepare("UPDATE " . $this->name .
@@ -232,23 +181,14 @@ class GameSQL implements SQLParentInterface {
         $sth->bindParam(':gameId', $id);
         $sth->execute();  //execute the statement on the database
 
-        if($sth->rowCount()) {
-            $wrapper->setMessage($this->name . " was fully updated");
-            $wrapper->setData(null);
-            $wrapper->setStatus("OK");
-            $wrapper->setCode(StatusCodes::OK);
-        } else {
-            $wrapper->setMessage($this->name . " was not fully updated");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::INTERNAL_SERVER_ERROR);
-        }
-        return $wrapper;
+        if($sth->rowCount())
+            return $this->returnResponse($this->name . " was fully updated", null, Status::SUCCESS, StatusCodes::CREATED);
+        else
+            return $this->returnResponse($this->name . " was not fully updated", null, Status::ERROR, StatusCodes::INTERNAL_SERVER_ERROR);
     }
 
     public function partiallyUpdate($obj, $id) {
         //vars
-        $wrapper = new JsonWrapper();
         $arr = null;
         $data = null;
 
@@ -256,22 +196,13 @@ class GameSQL implements SQLParentInterface {
         $id = filter_var($id, FILTER_SANITIZE_STRING);
 
         //type check id
-        if(!filter_var($id, FILTER_VALIDATE_INT) ){
-            $wrapper->setMessage($this->name . " Id is not a number");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+        if(!filter_var($id, FILTER_VALIDATE_INT))
+            return $this->returnResponse($this->name . " Id is not a number", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //check if valid json
-        if(!json_decode($obj)) {
-            $wrapper->setMessage("JSON format is incorrect");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        } else
+        if(!json_decode($obj))
+            $this->returnResponse("JSON format is incorrect", null, Status::ERROR, StatusCodes::BAD_REQUEST);
+        else
             $arr = json_decode($obj, true);
 
         //check if valid keys exist
@@ -279,13 +210,8 @@ class GameSQL implements SQLParentInterface {
             || array_key_exists("GameLocation", $arr) || array_key_exists("GameDateTime", $arr)) {
             //check for empty fields
             foreach($arr as $key => $value) {
-                if(empty($value)) {
-                    $wrapper->setMessage("No values can be empty");
-                    $wrapper->setData(null);
-                    $wrapper->setStatus("Error");
-                    $wrapper->setCode(StatusCodes::BAD_REQUEST);
-                    return $wrapper;
-                }
+                if(empty($value))
+                    return $this->returnResponse("No values can be empty", null, Status::ERROR, StatusCodes::BAD_REQUEST);
             }
             //sanitize all values
             foreach($arr as $key => $value)
@@ -302,13 +228,8 @@ class GameSQL implements SQLParentInterface {
                 $data->GameLocation = $arr['GameLocation'];
             if(isset($arr['GameDateTime']))
                 $data->GameDateTime = $arr['GameDateTime'];
-        } else {
-            $wrapper->setMessage("Key names are incorrect");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+        } else
+            return $this->returnResponse("Key names are incorrect", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //Prepare SQL
         $startStatement = "UPDATE " . $this->name . " SET ";
@@ -341,35 +262,19 @@ class GameSQL implements SQLParentInterface {
         $sth->bindParam(':gameId', $id);
         $sth->execute();  //execute the statement on the database
 
-        if($sth->rowCount()) {
-            $wrapper->setMessage($this->name . " was partially updated");
-            $wrapper->setData(null);
-            $wrapper->setStatus("OK");
-            $wrapper->setCode(StatusCodes::OK);
-        } else {
-            $wrapper->setMessage($this->name . " was not partially updated");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::INTERNAL_SERVER_ERROR);
-        }
-        return $wrapper;
+        if($sth->rowCount())
+            return $this->returnResponse($this->name . " was partially updated", null, Status::SUCCESS, StatusCodes::CREATED);
+        else
+            return $this->returnResponse($this->name . " was not partially updated", null, Status::ERROR, StatusCodes::INTERNAL_SERVER_ERROR);
     }
 
     public function delete($id) {
-        //the wrapper
-        $wrapper = new JsonWrapper();
-
         //sanitize id
         $id = filter_var($id, FILTER_SANITIZE_STRING);
 
         //type check id
-        if(!filter_var($id, FILTER_VALIDATE_INT) ){
-            $wrapper->setMessage($this->name . " Id is not a number");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::BAD_REQUEST);
-            return $wrapper;
-        }
+        if(!filter_var($id, FILTER_VALIDATE_INT))
+            return $this->returnResponse($this->name . " Id is not a number", null, Status::ERROR, StatusCodes::BAD_REQUEST);
 
         //Prepare SQL
         $sth = $this->db->prepare("DELETE FROM " . $this->name . " 
@@ -377,17 +282,9 @@ class GameSQL implements SQLParentInterface {
         $sth->bindParam(':id', $id);
         $sth->execute();  //execute the statement on the database
 
-        if($sth->rowCount()) {
-            $wrapper->setMessage($this->name . " was deleted");
-            $wrapper->setData(null);
-            $wrapper->setStatus("OK");
-            $wrapper->setCode(StatusCodes::OK);
-        } else {
-            $wrapper->setMessage($this->name . " does not exist and was not deleted");
-            $wrapper->setData(null);
-            $wrapper->setStatus("Error");
-            $wrapper->setCode(StatusCodes::NOT_FOUND);
-        }
-        return $wrapper;
+        if($sth->rowCount())
+            return $this->returnResponse($this->name . " was deleted", null, Status::SUCCESS, StatusCodes::CREATED);
+        else
+            return $this->returnResponse($this->name . " was not deleted", null, Status::ERROR, StatusCodes::INTERNAL_SERVER_ERROR);
     }
 }
