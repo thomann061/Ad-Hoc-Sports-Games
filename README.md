@@ -50,4 +50,4 @@ These four endpoints support 5 HTTP methods: GET, POST, PATCH, PUT, DELETE
 
     PUT: http://localhost:8080/api/v1/game/{id}/{sub-endpoint}/{id}
 
-    DELETE: http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}/{id}
+    DELETE: http://localhost:8080/api/v1/game/{id}/{sub-endpoint}/{id}
