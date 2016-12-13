@@ -1,26 +1,41 @@
-# Slim Framework 3 Skeleton Application
+# Ad Hoc Sports Games RESTful API
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application. This application uses the latest Slim 3 with the PHP-View template renderer. It also uses the Monolog logger.
+This application uses the Slim Framework for PHP.
 
-This skeleton application was built for Composer. This makes setting up a new Slim Framework application quick and easy.
+The idea of this RESTful API is to help users post a location and time for a sports game of their choice.  Other users will be able to comment on the posted game and if enough people decide they can make it, the game will played.  Afterwards, users can rate the game played.
 
-## Install the Application
+## Run the Application
 
-Run this command from the directory in which you want to install your new Slim Framework application.
+Easiest way to run the app locally from a php server:
 
-    php composer.phar create-project slim/slim-skeleton [my-app-name]
+    php -S 0.0.0.0:8080 -t public public/index.php
+    
+## Database
 
-Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
+Feel free to use the sample database located in /database.txt
 
-* Point your virtual host document root to your new application's `public/` directory.
-* Ensure `logs/` is web writeable.
+## Endpoint/Sub-Endpoint Background
 
-To run the application in development, you can also run this command. 
+Base URL: http://localhost:8080/api/v1/
 
-	php composer.phar start
+There are four endpoints: user, game, comment (sub-endpoint), rating (sub-endpoint)
 
-Run this command to run the test suite
+These four endpoints support six HTTP methods: GET (all), GET (one), POST, PATCH, PUT, DELETE
 
-	php composer.phar test
+## Endpoint Format
 
-That's it! Now go build something cool.
+GET (all): http://localhost:8080/api/v1/{endpoint}
+GET (one): http://localhost:8080/api/v1/{endpoint}/{id}
+POST: http://localhost:8080/api/v1/{endpoint}/{id}
+PATCH: http://localhost:8080/api/v1/{endpoint}/{id}
+PUT: http://localhost:8080/api/v1/{endpoint}/{id}
+DELETE: http://localhost:8080/api/v1/{endpoint}/{id}
+
+## Sub-Endpoint Format
+
+GET (all): http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}
+GET (one): http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}/{id}
+POST: http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}
+PATCH: http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}/{id}
+PUT: http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}/{id}
+DELETE: http://localhost:8080/api/v1/{endpoint}/{id}/{sub-endpoint}/{id}
